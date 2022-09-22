@@ -88,19 +88,28 @@ def set_genres():
                     df_genres.loc[index, 'Genre1'] = genre['Genres']
                     break      
 
-def search_genres():
+def auxi_file_writer(df_books,idx,not_found,start_time,batch,state):
+     df_books[idx-batch+1:idx].to_csv(path_or_buf='./resources/books_description_clean_genres_backup.csv',mode='a',header=state)
+     print(f'{idx} - not found {not_found} - time: {str(timedelta(seconds=time.time() - start_time))}')
+
+def search_genres(init,state=False):
      start_time = time.time()
      df_books = pd.read_csv('./resources/books_description_clean_genres.csv', index_col=0)
      df_auxi = pd.read_csv('./resources/books_description_clean_genres_aux.csv', index_col=0)
      not_found = 0
-     for idx,book in df_books.iterrows():
+     batch = 2000
+     for idx,book in df_books[init:].iterrows():
           if idx < 13000:
                book_auxi = df_auxi[(df_auxi['Name'].eq(book['Name']))]
-               if book_auxi.shape[0] != 0 and book_auxi['Genre1'].any():
-                    df_books.loc[idx, 'Genre'] = book_auxi['Genre']
-                    df_books.loc[idx, 'Genre1'] = book_auxi['Genre1']
+               if book_auxi.shape[0] != 0 and book_auxi['Genre'].any():
+                    df_books.loc[idx, 'Genre'] = book_auxi['Genre'].values[0]
+                    df_books.loc[idx, 'Genre1'] = book_auxi['Genre1'].values[0]
+                    if idx!= 0 and idx % batch == 0:
+                       auxi_file_writer(df_books,idx,not_found,start_time,batch,state)
+                       if state:
+                         state = False 
                     continue
-          isbn = book['ISBN'].zfill(10)
+          isbn = str(book['ISBN']).zfill(10)
 
           genre = get_genre(isbn)
           if genre is not None:
@@ -109,8 +118,9 @@ def search_genres():
                df_books.loc[idx, 'Genre1'] = genre1
           else:
                #df_books.drop(index, inplace=True)
-               print(book['Name'])
+               #print(book['Name'])
                not_found += 1
-          if idx % 1000 == 0:
-               df_books.to_csv(path_or_buf='./resources/books_description_clean_genres.csv', index=False)
-               print(f'{idx} - not found {not_found} - time: {str(timedelta(seconds=time.time() - start_time))}')
+          if idx!= 0 and idx % batch == 0:
+               auxi_file_writer(df_books,idx,not_found,start_time,batch,state)
+               if state:
+                    state = False
