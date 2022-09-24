@@ -8,11 +8,11 @@ import plotly.graph_objects as go
 
 
 #If second param true, adds column language
-def delete_invalid_format(df,lang=False):
+def delete_invalid_format(df,column,lang=False):
      indx=[]
      for i in df.index:
           try:
-               language = detect(df.at[i,'Description'])
+               language = detect(df.at[i,column])
                if lang:
                     df.loc[i, 'Language'] = language 
           except:
@@ -43,14 +43,16 @@ def clean_text(text):
     text = re.sub(r"\\", "", text)
     text = re.sub(r"\'", "", text)    
     text = re.sub(r"\"", "", text)
-    text = re.sub('[^a-zA-Z ?!]+', '', text)
+    text = re.sub('[^a-zA-Z ?! 0-9]+', '', text)
     text = _removeNonAscii(text)
     text = text.strip()
     return text
 
-def cleaner(df):
-     df['Description'] = df['Description'].apply(clean_text)
-     df = df[(pd.notnull(df['Description']))&(df['Description'].ne(''))]
+def cleaner(df,column,duplicates=False):
+     df[column] = df[column].apply(clean_text)
+     df = df[(pd.notnull(df[column]))&(df[column].ne(''))]
+     if duplicates:
+          df = df.drop_duplicates(column)
      return df
 
 lang_lookup = pd.read_html('https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes')[0]

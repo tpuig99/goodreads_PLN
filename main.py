@@ -1,18 +1,23 @@
-from data_generator import * 
-from data_manipulator import *
+from genres.data_generator import * 
+from genres.data_manipulator import *
+from reviews.data_manipulator import *
+from analizer import * 
 
-from genreFetcher import * 
+import Levenshtein
+
 
 # make_dataset()
 # clean_datasets()
 # get_best_genres()
 # set_genres()
 
-search_genres(18000)
-
-# df_books = pd.read_csv('./resources/books_description_clean_genres.csv', index_col=0)
+#search_genres(141566)
 # book = df_books.iloc[[18129]]
 # print(book)
 # isbn = str(book['ISBN'].values[0]).zfill(10)
 # print(f'|{isbn}|')
 # print(get_genre(isbn))
+
+#clean_dataset()
+
+analize_reviews()
