@@ -12,7 +12,7 @@ def get_genre(isbn):
           try:
                if 'error' in obj:
                     #print(f"error, esperemos unos segundos --> {isbn}")
-                    time.sleep(1)
+                    time.sleep(0.5)
                     continue
                message = "getObject"
                categories = obj["items"][0]

@@ -25,28 +25,32 @@ def _removeNonAscii(s):
     return "".join(i for i in s if ord(i)<128)
 
 def clean_text(text):
-    text = text.lower()
-    text = " ".join(text.split())
-    text = re.sub(re.compile('<.*?>'), '', text) #delete tags <br>
-    text = re.sub(r"what's", "what is ", text)
-    text = text.replace('(ap)', '')
-    text = re.sub(r"\'s", " is ", text)
-    text = re.sub(r"\'ve", " have ", text)
-    text = re.sub(r"can't", "cannot ", text)
-    text = re.sub(r"n't", " not ", text)
-    text = re.sub(r"i'm", "i am ", text)
-    text = re.sub(r"\'re", " are ", text)
-    text = re.sub(r"\'d", " would ", text)
-    text = re.sub(r"\'ll", " will ", text)
-    text = re.sub(r'\W+', ' ', text)
-    text = re.sub(r'\s+', ' ', text)
-    text = re.sub(r"\\", "", text)
-    text = re.sub(r"\'", "", text)    
-    text = re.sub(r"\"", "", text)
-    text = re.sub('[^a-zA-Z ?! 0-9]+', '', text)
-    text = _removeNonAscii(text)
-    text = text.strip()
-    return text
+     if text is None:
+          return None
+     if isinstance(text,list):
+          text = text[0]
+     text = text.lower()
+     text = " ".join(text.split())
+     text = re.sub(re.compile('<.*?>'), '', text) #delete tags <br>
+     text = re.sub(r"what's", "what is ", text)
+     text = text.replace('(ap)', '')
+     text = re.sub(r"\'s", " is ", text)
+     text = re.sub(r"\'ve", " have ", text)
+     text = re.sub(r"can't", "cannot ", text)
+     text = re.sub(r"n't", " not ", text)
+     text = re.sub(r"i'm", "i am ", text)
+     text = re.sub(r"\'re", " are ", text)
+     text = re.sub(r"\'d", " would ", text)
+     text = re.sub(r"\'ll", " will ", text)
+     text = re.sub(r'\W+', ' ', text)
+     text = re.sub(r'\s+', ' ', text)
+     text = re.sub(r"\\", "", text)
+     text = re.sub(r"\'", "", text)    
+     text = re.sub(r"\"", "", text)
+     text = re.sub('[^a-zA-Z ?! 0-9]+', '', text)
+     text = _removeNonAscii(text)
+     text = text.strip()
+     return text
 
 def cleaner(df,column,duplicates=False):
      df[column] = df[column].apply(clean_text)
