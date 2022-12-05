@@ -5,7 +5,8 @@ import re
 from langdetect import detect
 import plotly.express as px
 import plotly.graph_objects as go
-
+from nltk.corpus import stopwords
+stop = stopwords.words('english')
 
 #If second param true, adds column language
 def delete_invalid_format(df,column,lang=False):
@@ -87,4 +88,34 @@ def bar(df, var,title=''):
         yaxis_title="Cantidad", 
         font={'size': 18} 
     )    
+    fig.show()
+
+
+def clean_stopwords(df,column,save=False,path=""):
+     df[column] = df[column].apply(lambda x: ' '.join([word for word in str(x).split() if word not in (stop)]))
+     if save:
+          df.to_csv(path)
+     return df
+     
+def get_balanced(df,col):
+     max_per_group = min(df[col].value_counts())
+     df = df.groupby(col, group_keys=False).apply(lambda x: x.sample(max_per_group))
+     return df
+
+def plot_multivariable_confussion_matrix(y_true,y_predict,labels,title):
+    matrix = np.zeros((len(labels),len(labels)))
+   
+    for i in range(1,len(y_true)):
+        real_index = np.where(labels == y_true[i])[0][0]
+        predict_index = np.where(labels == y_predict[i])[0][0]
+        matrix[real_index][predict_index] += 1
+    
+    fig = px.imshow(matrix, text_auto=True, x=labels,y=labels,color_continuous_scale='purpor')
+
+    fig.update_layout(
+        title=f"{title}",
+        xaxis_title="Predicción",
+        yaxis_title="Real", 
+        font= { 'size': 18 }
+    )
     fig.show()

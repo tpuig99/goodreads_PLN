@@ -36,7 +36,7 @@ def clean_datasets():
           df_books.to_csv('./resources/books_description_clean.csv')
 
 #FOR FILE WHERE GENRES DOESNT EXIST
-def search_genres(file_orig,temp_file_dest,genre_column,init,state=False):
+def search_genres(file_orig,temp_file_dest,genre_column,init=0,state=False):
      df_books = pd.read_csv(file_orig)
      batch = 2000
      for idx,book in df_books[init:].iterrows():
@@ -84,5 +84,42 @@ def set_genres(books_file,dest_file,genre_col):
      df_books.to_csv(dest_file)
      
      
+#to clean extra genres
+def  filter_or_delete_genres(df_books):
+     #df_books = pd.read_csv(books_file)
+     genres = pd.read_csv('./resources/genres.csv')
+     genres = genres['Genres']
+     
+     for idx,book in df_books.iterrows():
+          genre = str(book['Genre'])
+          genre_legal = get_legal_genres(genre)
+          
+          if genre_legal is not None:
+               df_books.loc[idx, 'Genre'] = genre_legal
+          else:
+               df_books.drop(idx, inplace=True)
+     #df_books.to_csv(books_file) 
+     return df_books
 
-           
+#to delete extra genres
+def  delete_extra_genres(df_books):
+     #df_books = pd.read_csv(books_file)
+     genres = pd.read_csv('./resources/genres.csv')
+     genres = genres['Genres']
+     
+     df_books = df_books[df_books['Genre'].isin(genres)]
+     #df_books.to_csv(books_file) 
+     return df_books
+
+#concat files
+def  concat_files(file1,file2,books_file):
+     df_books1 = pd.read_csv(file1)
+     df_books2 = pd.read_csv(file2)
+     
+     df_books1 = df_books1[['Name','ISBN','Description','Genre']]
+     df_books2 = df_books2[['Name','ISBN','Description','Genre']]
+     
+     df_books = pd.concat([df_books1, df_books2], ignore_index=True)
+     df_books = df_books.drop_duplicates(subset=['ISBN', 'Name'], keep='first')
+     df_books.to_csv(books_file) 
+     return df_books

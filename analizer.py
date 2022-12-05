@@ -7,8 +7,8 @@ from wordcloud import WordCloud
 import matplotlib.pyplot as plt
 from sklearn.feature_extraction.text import TfidfVectorizer
 
-def analize_genres():
-     df_genres = pd.read_csv('./resources/genres/books_genres_finale.csv')
+def analize_genres(book_path_dest):
+     df_genres = pd.read_csv(book_path_dest)
      bar(pd.DataFrame(df_genres,columns=['Genre']),'Genre','Generos')
      nltk.download('stopwords')
      stopw = set(stopwords.words('english')) 

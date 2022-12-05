@@ -33,7 +33,7 @@ def get_best_genres(file_orig,genre_col,plot=False):
 
 #From genre gets its general name
 def get_legal_genres(item):
-     if item is None:
+     if item is None or item is nan:
           return None
      if isinstance(item,list):
           item = item[0]
@@ -42,14 +42,21 @@ def get_legal_genres(item):
      genres = pd.read_csv('./resources/genres.csv')
      #primero chequeo por los titulares 
      for g in genres['Genres']:
-          if item in (g) or g in item:
+          if item == g:
                return g
+
+     # for g in genres['Genres']:
+     #      if item in (g) or g in item:
+     #           return g
 
      for _,genre in genres.iterrows():
           glist = re.split(r"[,|]", genre['Similar'])
           for g in glist:
-               if item in (g) or g in item:
+               if item == (g):
                     return genre['Genres']
+          # for g in glist:
+          #      if item in (g) or g in item:
+          #           return genre['Genres']
      return None
 
 def auxi_file_writer(temp_file_dest,df_books,idx,batch,state):
